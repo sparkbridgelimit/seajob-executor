@@ -1,0 +1,47 @@
+{
+  "name": "seajob-executor",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "package": "pnpx pkg . --public"
+  },
+  "bin": {
+    "seajob-executor": "src/index.cjs"
+  },
+  "pkg": {
+    "scripts": [
+      "src/index.cjs",
+      "src/boss.cjs"
+    ],
+    "targets": [
+      "node16-macos-arm64"
+    ],
+    "outputPath": "dist",
+    "assets": [
+      "node_modules/puppeteer/**/*",
+      "node_modules/puppeteer-extra/**/*",
+      "node_modules/puppeteer-extra-plugin-stealth/**/*",
+      "node_modules/puppeteer-extra-plugin-user-preferences/**/*",
+      "node_modules/puppeteer-extra-plugin-stealth/evasions/**/*",
+      "node_modules/puppeteer-extra-plugin-stealth/evasions/chrome.app/**/*",
+      "node_modules/puppeteer-extra-plugin-user-preferences/**/*",
+      "node_modules/puppeteer-extra-plugin-user-data-dir/**/*"
+    ]
+  },
+  "devDependencies": {
+    "vite": "^5.3.4"
+  },
+  "dependencies": {
+    "@rollup/plugin-commonjs": "^26.0.1",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "pkg": "^5.8.1",
+    "puppeteer": "^22.13.1",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "puppeteer-extra-plugin-user-data-dir": "^2.4.1",
+    "puppeteer-extra-plugin-user-preferences": "^2.4.1"
+  }
+}
