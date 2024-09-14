@@ -17,7 +17,8 @@
       "src/boss.cjs"
     ],
     "targets": [
-      "node16-macos-arm64"
+      "node16-macos-arm64",
+      "node16-macos-x64"
     ],
     "outputPath": "dist",
     "assets": [
@@ -32,13 +33,13 @@
     ]
   },
   "devDependencies": {
-    "vite": "^5.3.4"
+    "vite": "^5.4.4"
   },
   "dependencies": {
     "@rollup/plugin-commonjs": "^26.0.1",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "pkg": "^5.8.1",
-    "puppeteer": "^22.13.1",
+    "puppeteer": "^22.15.0",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
     "puppeteer-extra-plugin-user-data-dir": "^2.4.1",
