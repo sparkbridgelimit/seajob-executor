@@ -1,4 +1,4 @@
-const { main: start } = require("./boss2.cjs");
+const { main: start } = require("./boss.cjs");
 
 console.log("Starting script...");
 
