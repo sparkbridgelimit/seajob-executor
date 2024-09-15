@@ -410,28 +410,24 @@ async function init() {
 }
 /** 启动浏览器，写入 cookie */
 async function initBrowserAndSetCookie() {
-  const BROWERLESS = process.env.BROWERLESS;
-  if (BROWERLESS) {
-    myLog(
-      `使用远程浏览器启动服务，“观察打招呼过程”无效，超时时间建议 16s 以上`
-    );
-
-    browser = await puppeteer.connect({
-      browserWSEndpoint: BROWERLESS,
-    });
-    openNewTabTime = 5000;
-  } else {
-    browser = await puppeteer.launch({
-      headless, // 是否以浏览器视图调试
-      devtools: false,
-      defaultViewport: null, // null 则页面和窗口大小一致
-    });
+  const executablePath = process.env.CHROME_PATH;
+  if (!executablePath) {
+    throw new Error("CHROME_PATH environment variable is not set");
   }
+  console.log("Executable path:", executablePath);
+  
+  browser = await puppeteer.launch({
+    headless, // 是否以浏览器视图调试
+    devtools: false,
+    defaultViewport: null, // null 则页面和窗口大小一致
+    executablePath: executablePath,
+  });
 
   marketPage = await getNewPage();
   await marketPage.setDefaultTimeout(timeout);
   await marketPage.setCookie(...cookies);
 }
+
 async function getNewPage() {
   const page = await browser.newPage();
   return page;
