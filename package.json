@@ -17,8 +17,7 @@
       "src/boss.cjs"
     ],
     "targets": [
-      "node16-macos-arm64",
-      "node16-macos-x64"
+      "node16-win-x64"
     ],
     "outputPath": "dist",
     "assets": [
@@ -44,5 +43,6 @@
     "puppeteer-extra-plugin-stealth": "^2.11.2",
     "puppeteer-extra-plugin-user-data-dir": "^2.4.1",
     "puppeteer-extra-plugin-user-preferences": "^2.4.1"
-  }
+  },
+  "packageManager": "pnpm@9.10.0+sha512.73a29afa36a0d092ece5271de5177ecbf8318d454ecd701343131b8ebc0c1a91c487da46ab77c8e596d6acf1461e3594ced4becedf8921b074fbd8653ed7051c"
 }
