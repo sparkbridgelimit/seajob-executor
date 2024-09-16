@@ -52,8 +52,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         with:
-          tag_name: v${{ env.VERSION }} # 使用 package.json 中的版本号
-          release_name: 'seajob-executor Release v${{ env.VERSION }}'
+          tag_name: 'v0.0.1' # 使用 package.json 中的版本号
+          release_name: 'seajob-executor Release v0.0.1'
           draft: true
           prerelease: false
       
