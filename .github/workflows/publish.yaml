@@ -50,7 +50,7 @@ jobs:
         id: create_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: 'v0.0.1' # 使用 package.json 中的版本号
           release_name: 'seajob-executor Release v0.0.1'
