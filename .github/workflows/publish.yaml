@@ -39,6 +39,10 @@ jobs:
       - name: install frontend dependencies
         run: pnpm install
 
+      - name: Get version from package.json
+        id: get_version
+        run: echo "VERSION=$(jq -r '.version' package.json)" >> $GITHUB_ENV
+
       - name: Package with pkg
         run: pnpx pkg . --public ${{ matrix.args }} --output dist/seajob-executor-${{ matrix.platform }}
 
@@ -50,7 +54,7 @@ jobs:
         with:
           tag_name: v${{ env.VERSION }} # 使用 package.json 中的版本号
           release_name: 'seajob-executor Release v${{ env.VERSION }}'
-          draft: false
+          draft: true
           prerelease: false
       
       - name: Upload Release Asset
