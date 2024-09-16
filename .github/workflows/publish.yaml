@@ -1,0 +1,49 @@
+name: 'publish'
+
+on:
+  push:
+    branches:
+      - deploy
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: 'macos-latest' # for Arm based macs (M1 and above).
+            args: '--target aarch64-apple-darwin'
+          - platform: 'macos-latest' # for Intel based macs.
+            args: '--target x86_64-apple-darwin'
+          - platform: 'windows-latest'
+            args: ''
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+  
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Enable corepack
+        run: corepack enable
+
+      - name: install frontend dependencies
+        run: pnpm install
+
+      - name: Package with pkg
+        run: pnpx pkg . --public ${{ matrix.args }} --output dist/seajob-executor-${{ matrix.platform }}
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: seajob-executor-${{ matrix.platform }}
+          path: dist/seajob-executor-${{ matrix.platform }}
