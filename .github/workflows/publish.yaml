@@ -55,9 +55,7 @@ jobs:
           name: "Release v${{ env.VERSION }}"
           tag_name: "v${{ env.VERSION }}"
           files: |
-            dist/seajob-executor-macos-arm64
-            dist/seajob-executor-macos-x64
-            dist/seajob-executor-windows-x64
+            dist/seajob-executor-${{ matrix.file_suffix }}
           draft: true
           prerelease: false
           make_latest: true
