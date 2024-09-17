@@ -51,11 +51,12 @@ jobs:
       
       - name: List dist directory (debug)
         run: |
-          if [[ "$RUNNER_OS" == "Windows" ]]; then
+          if [ "$RUNNER_OS" == "Windows" ]; then
             dir dist
           else
             ls -la dist
           fi
+        shell: bash
 
       - name: Release
         uses: softprops/action-gh-release@v2
