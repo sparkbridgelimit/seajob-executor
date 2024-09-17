@@ -25,7 +25,7 @@ jobs:
             file_suffix: 'macos-x64'
           - platform: 'windows-latest'
             args: '--target node16-win-x64'
-            file_suffix: 'windows-x64'
+            file_suffix: 'windows-x64.exe'
 
     runs-on: ${{ matrix.platform }}
     steps:
