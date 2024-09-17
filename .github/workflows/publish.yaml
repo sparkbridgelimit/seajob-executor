@@ -19,10 +19,13 @@ jobs:
         include:
           - platform: 'macos-latest'
             args: '--target node16-macos-arm64'
+            file_suffix: 'macos-arm64'
           - platform: 'macos-latest'
             args: '--target node16-macos-x64'
+            file_suffix: 'macos-x64'
           - platform: 'windows-latest'
             args: '--target node16-win-x64'
+            file_suffix: 'windows-x64'
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -44,20 +47,17 @@ jobs:
         run: echo "VERSION=$(jq -r '.version' package.json)" >> $GITHUB_ENV
 
       - name: Package with pkg
-        run: pnpx pkg . --public ${{ matrix.args }} --output dist/seajob-executor-${{ matrix.platform }}
+        run: pnpx pkg . --public ${{ matrix.args }} --output dist/seajob-executor-${{ matrix.file_suffix }}
       
-      - name: List dist directory (debug)
-        run: ls -la dist
-
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
           name: "Release v${{ env.VERSION }}"
           tag_name: "v${{ env.VERSION }}"
           files: |
-            dist/seajob-executor-macos-latest-arm64
-            dist/seajob-executor-macos-latest-x64
-            dist/seajob-executor-windows-latest-x64
+            dist/seajob-executor-macos-arm64
+            dist/seajob-executor-macos-x64
+            dist/seajob-executor-windows-x64
           draft: true
           prerelease: false
           make_latest: true
