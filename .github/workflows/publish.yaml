@@ -49,6 +49,14 @@ jobs:
       - name: Package with pkg
         run: pnpx pkg . --public ${{ matrix.args }} --output dist/seajob-executor-${{ matrix.file_suffix }}
       
+      - name: List dist directory (debug)
+        run: |
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            dir dist
+          else
+            ls -la dist
+          fi
+
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
