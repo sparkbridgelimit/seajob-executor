@@ -45,6 +45,9 @@ jobs:
 
       - name: Package with pkg
         run: pnpx pkg . --public ${{ matrix.args }} --output dist/seajob-executor-${{ matrix.platform }}
+      
+      - name: List dist directory (debug)
+        run: ls -la dist
 
       - name: Release
         uses: softprops/action-gh-release@v2
