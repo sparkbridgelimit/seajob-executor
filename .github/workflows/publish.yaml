@@ -61,12 +61,8 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
-          name: "Release v${{ env.VERSION }}"
-          tag_name: "v${{ env.VERSION }}"
           files: |
             dist/seajob-executor-${{ matrix.file_suffix }}
           draft: true
           prerelease: false
           make_latest: true
-        env:
-          VERSION: ${{ steps.get_version.outputs.VERSION }} # 确保传递正确的版本号
