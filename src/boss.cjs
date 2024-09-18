@@ -524,7 +524,7 @@ function resetOnetimeStatus() {
   onetimeStatus.maxPageNum = 10;
 }
 function sleep(time = 1000) {
-  myLog(`等待${time}秒, 防封号`);
+  myLog(`等待${time / 1000 }秒`);
   return new Promise((resolve, reject) => {
     setTimeout(resolve, time);
   });
