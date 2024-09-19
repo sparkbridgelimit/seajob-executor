@@ -42,9 +42,23 @@ jobs:
       - name: install frontend dependencies
         run: pnpm install
 
-      - name: Get version from package.json
-        id: get_version
-        run: echo "VERSION=$(jq -r '.version' package.json)" >> $GITHUB_ENV
+      # 在非 Windows 系统使用 jq 读取版本号
+      - name: Read version from package.json (Non-Windows)
+        if: runner.os != 'Windows'
+        run: |
+          VERSION=$(jq -r '.version' package.json)
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+          echo "version: $VERSION"
+        shell: bash
+      
+      # 在 Windows 系统使用 PowerShell 读取版本号
+      - name: Read version from package.json (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          $json = Get-Content package.json | ConvertFrom-Json
+          echo "VERSION=$($json.version)" >> $env:GITHUB_ENV
+          echo "version: $env:VERSION"
+        shell: pwsh
 
       - name: Package with pkg
         run: pnpx pkg . --public ${{ matrix.args }} --output dist/seajob-executor-${{ matrix.file_suffix }}
@@ -66,3 +80,4 @@ jobs:
           draft: false
           prerelease: false
           make_latest: true
+          tag_name: ${{ env.VERSION }} 
