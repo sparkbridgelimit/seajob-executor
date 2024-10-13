@@ -54,6 +54,9 @@ let headless = "new";
 let openNewTabTime = 5000;
 let job_task_id = "";
 
+// 是否过滤不在线boss
+let filterOffline = false;
+
 // 读取已投递公司存储，执行 main；
 async function start(conf = {}) {
   ({
@@ -69,6 +72,7 @@ async function start(conf = {}) {
     excludeJobs: inputExcludeJobs = [],
     headless: inputHeadless = "new",
     job_task_id: input_job_task_id = "",
+    filterOffline: input_filterOffline = false,
   } = conf);
 
   // 覆盖全局变量
@@ -82,6 +86,7 @@ async function start(conf = {}) {
   excludeJobs = inputExcludeJobs;
   headless = inputHeadless;
   job_task_id = input_job_task_id;
+  filterOffline = input_filterOffline;
 
   cookies[0].value = wt2Cookie;
   pageNum = queryParams.page || 1;
@@ -192,7 +197,7 @@ async function autoSayHello(marketPage) {
     let isOnline = await node
       .$eval(".boss-online-tag", (node) => node.innerText === "在线")
       .catch(() => false);
-    if (!isOnline) {
+    if (!isOnline && filterOffline) {
       myLog(`🎃 略过 ${fullName}，BOSS不在线`);
       return false;
     }
