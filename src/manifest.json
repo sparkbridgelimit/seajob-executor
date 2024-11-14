@@ -1,0 +1,17 @@
+{
+  "styles": [
+    "https://static.zhipin.com/zhipin-geek-seo/v5205/web/geek/css/main.css",
+    "https://www.zhipin.com/web/common/header-tools.css"
+  ],
+  "scripts": [
+    "https://z.zhipin.com/H5/js/plugins/web-report.min-1.39.js",
+    "https://logapi.zhipin.com/dap/jssdk/warlockdata.min.2.1.5.js",
+    "https://static.zhipin.com/library/js/lib/jquery-1.12.2.min.js",
+    "https://static.zhipin.com/zhipin-geek-seo/v5205/web/geek/js/main.js",
+    "https://img.bosszhipin.com/static/file/2021/mqtt-v2.1.min.js?from=geek",
+    "https://www.zhipin.com/web/common/header-tools.js",
+    "https://static.zhipin.com/library/js/sdk/verify-sdk-v2.6.js",
+    "https://static.zhipin.com/library/js/analytics/ka.zhipin.min.js?v=5205",
+    "https://static.zhipin.com/v2/web/geek/js/socket.js"
+  ]
+}

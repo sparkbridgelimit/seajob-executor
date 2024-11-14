@@ -9,7 +9,7 @@ const key_kills = process.env.key_kills || "[]";
 const exclude_company = process.env.exclude_company || '[]';
 const exclude_job = process.env.exclude_job || "[]";
 const wt2Cookie = process.env.wt2_cookie;
-// const wt2Cookie = process.env.wt2_cookie || "DDa8j0tAEmkPUX4o0y-rvA5TmRT81ZO1W50XcO7ed48A1PY74_zfmxiep-KssgRPaCz08saRZyg3wPSSJshbGtg~~";
+// const wt2Cookie = process.env.wt2_cookie || "DUQ08H6Va5M2VA49gYUlf_rQzGDY37IJSF5MkMh_mD643AyUNBewY_XcCcdH41lbfrrHi6DwQC57-t1UPurzI-A~~";
 const targetNum = process.env.target_num || 1;
 const helloTxt = process.env.hello_txt || "你好";
 const headless = process.env.headless || 'true';
@@ -27,7 +27,7 @@ start({
   salaryRange: JSON.parse(salary_range || "[]"),
   timeout: "10000",
   // true的时候不会打开浏览器
-  headless: headless === 'true',
+  headless: headless === 'false',
   excludeCompanies: JSON.parse(exclude_company),
   excludeJobs: JSON.parse(exclude_job),
   keySkills: JSON.parse(key_kills),

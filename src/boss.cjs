@@ -7,9 +7,11 @@
  *
  * 4. 遇到问题，以 headless=false 进行调试
  */
-
+const crypto = require('crypto');
 const puppeteer = require("puppeteer-extra");
 const stealthPlugin = require("puppeteer-extra-plugin-stealth");
+const { precache } = require("./precache.cjs");
+
 puppeteer.use(stealthPlugin());
 
 let browser;
@@ -126,7 +128,7 @@ async function start(conf = {}) {
       myLog("❌ 执行出错", error);
     }
   }
-  await browser?.close()?.catch((e) => myLog("关闭无头浏览器出错", e));
+  // await browser?.close()?.catch((e) => myLog("关闭无头浏览器出错", e));
   browser = null;
   marketPage = null;
 }
@@ -420,12 +422,24 @@ async function initBrowserAndSetCookie() {
     throw new Error("CHROME_PATH environment variable is not set");
   }
   console.log("Executable path:", executablePath);
-  
+  const hash = crypto.createHash('md5').update(cookies[0].value).digest('hex');
+  const userDataDir = `./cache/${hash}`;
+
   browser = await puppeteer.launch({
-    headless, // 是否以浏览器视图调试
+    userDataDir,
+    headless: false, // 是否以浏览器视图调试
     devtools: false,
-    defaultViewport: null, // null 则页面和窗口大小一致
+    defaultViewport: null,
     executablePath: executablePath,
+    args: [
+      '--disable-extensions',
+      '--disable-gpu',
+      '--no-sandbox',
+      '--no-first-run',
+      '--mute-audio',
+      '--no-default-browser-check',
+      '--disable-notifications',
+    ]
   });
 
   marketPage = await getNewPage();
@@ -435,6 +449,7 @@ async function initBrowserAndSetCookie() {
 
 async function getNewPage() {
   const page = await browser.newPage();
+  await precache(page);
   return page;
 }
 function getMarketUrl() {
