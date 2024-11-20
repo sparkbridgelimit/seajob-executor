@@ -59,7 +59,6 @@ let job_task_id = "";
 
 // 是否过滤不在线boss
 let filterOffline = false;
-let cache_dir = "";
 
 // 读取已投递公司存储，执行 main；
 async function start(conf = {}) {
@@ -77,7 +76,6 @@ async function start(conf = {}) {
     headless: inputHeadless = "new",
     job_task_id: input_job_task_id = "",
     filterOffline: input_filterOffline = false,
-    cache_dir: input_cache_dir = "./cache/"
   } = conf);
 
   // 覆盖全局变量
@@ -92,7 +90,6 @@ async function start(conf = {}) {
   headless = inputHeadless;
   job_task_id = input_job_task_id;
   filterOffline = input_filterOffline;
-  cache_dir = input_cache_dir;
   cookies[0].value = wt2Cookie;
   pageNum = queryParams.page || 1;
   ignoreNum = 0;
@@ -184,7 +181,6 @@ async function autoSayHello(marketPage) {
       (await node.$eval("a.start-chat-btn", (node) => node.innerText)) !==
       "继续沟通";
     if (!notCommunicate) {
-      myLog(`🎃 略过${fullName}：曾沟通`);
       return false;
     }
 
@@ -247,6 +243,7 @@ async function autoSayHello(marketPage) {
 }
 // sendHello 跳转到岗位详情页。至少有 3s 等待
 async function sendHello(node, marketPage) {
+  myLog(`跳转到岗位详情页`);
   await marketPage.evaluate((node) => node.click(), node); // 点击节点，打开公司详情页
   await sleep(openNewTabTime); // 等待新页面加载。远程浏览器需要更多时间，此处连接或新开页面，时间都会变动。
 
@@ -423,10 +420,11 @@ async function initBrowserAndSetCookie() {
   if (!executablePath) {
     throw new Error("CHROME_PATH environment variable is not set");
   }
-  console.log("Executable path:", executablePath);
+  myLog("Executable path:", executablePath);
   const hash = crypto.createHash('md5').update(cookies[0].value).digest('hex');
-  const userDataDir = path.join(cache_dir, hash);
-  
+  const userDataDir = path.join(process.env.cache_dir || './cache_dir', hash);
+  myLog("userDataDir: ", userDataDir)
+
   browser = await puppeteer.launch({
     userDataDir,
     headless: false, // 是否以浏览器视图调试
