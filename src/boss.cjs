@@ -111,6 +111,7 @@ async function start(conf = {}) {
 
     myLog("✨ 任务顺利完成！");
   } catch (error) {
+    myLog("❌ 执行出错", error);
     myLog("当前页码", pageNum);
     myLog("📊 未投递岗位数：", targetNum, "；略过岗位数：", ignoreNum);
 
@@ -126,8 +127,6 @@ async function start(conf = {}) {
       myLog(
         "❌ 执行出错：检测到 Boss 安全校验。请先在 Boss 网页上完成验证后重试"
       );
-    } else {
-      myLog("❌ 执行出错", error);
     }
   }
   await browser?.close()?.catch((e) => myLog("关闭无头浏览器出错", e));
