@@ -11,6 +11,7 @@ const crypto = require('crypto');
 const puppeteer = require("puppeteer-extra");
 const stealthPlugin = require("puppeteer-extra-plugin-stealth");
 const { precache } = require("./precache.cjs");
+const path = require("path");
 
 puppeteer.use(stealthPlugin());
 
