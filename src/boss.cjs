@@ -128,7 +128,7 @@ async function start(conf = {}) {
       myLog("❌ 执行出错", error);
     }
   }
-  // await browser?.close()?.catch((e) => myLog("关闭无头浏览器出错", e));
+  await browser?.close()?.catch((e) => myLog("关闭无头浏览器出错", e));
   browser = null;
   marketPage = null;
 }
