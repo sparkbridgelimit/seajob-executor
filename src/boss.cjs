@@ -58,6 +58,7 @@ let job_task_id = "";
 
 // 是否过滤不在线boss
 let filterOffline = false;
+let cache_dir = "";
 
 // 读取已投递公司存储，执行 main；
 async function start(conf = {}) {
@@ -75,6 +76,7 @@ async function start(conf = {}) {
     headless: inputHeadless = "new",
     job_task_id: input_job_task_id = "",
     filterOffline: input_filterOffline = false,
+    cache_dir: input_cache_dir = "./cache/"
   } = conf);
 
   // 覆盖全局变量
@@ -89,7 +91,7 @@ async function start(conf = {}) {
   headless = inputHeadless;
   job_task_id = input_job_task_id;
   filterOffline = input_filterOffline;
-
+  cache_dir = input_cache_dir;
   cookies[0].value = wt2Cookie;
   pageNum = queryParams.page || 1;
   ignoreNum = 0;
@@ -423,8 +425,8 @@ async function initBrowserAndSetCookie() {
   }
   console.log("Executable path:", executablePath);
   const hash = crypto.createHash('md5').update(cookies[0].value).digest('hex');
-  const userDataDir = `./cache/${hash}`;
-
+  const userDataDir = path.join(cache_dir, hash);
+  
   browser = await puppeteer.launch({
     userDataDir,
     headless: false, // 是否以浏览器视图调试
