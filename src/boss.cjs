@@ -7,11 +7,9 @@
  *
  * 4. 遇到问题，以 headless=false 进行调试
  */
-const crypto = require('crypto');
 const puppeteer = require("puppeteer-extra");
 const stealthPlugin = require("puppeteer-extra-plugin-stealth");
 const { precache } = require("./precache.cjs");
-const path = require("path");
 
 puppeteer.use(stealthPlugin());
 
@@ -421,13 +419,14 @@ async function initBrowserAndSetCookie() {
     throw new Error("CHROME_PATH environment variable is not set");
   }
   myLog("Executable path:", executablePath);
-  const hash = crypto.createHash('md5').update(cookies[0].value).digest('hex');
-  const userDataDir = path.join(process.env.cache_dir || './cache_dir', hash);
+  // const userDataDir = path.join(process.env.cache_dir || './cache_dir', hash);
+  const userDataDir = process.env.cache_dir || './cache_dir'
+
   myLog("userDataDir: ", userDataDir)
 
   browser = await puppeteer.launch({
     userDataDir,
-    headless: false, // 是否以浏览器视图调试
+    headless: headless,
     devtools: false,
     defaultViewport: null,
     executablePath: executablePath,
