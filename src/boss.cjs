@@ -365,16 +365,16 @@ async function sendHello(node, marketPage) {
 
   // 已经发过了就重复了
   // sentElemt
-  const sentElemSelector = "";
-  const sentElem = await detailPage.$(sentElemSelector);
+  // const sentElemSelector = "";
+  // const sentElem = await detailPage.$(sentElemSelector);
   
-  if (sentElem) {
-    ignoreNum++
-    myLog(
-      `🎃 略过 ${fullName}，已经沟通过了, 复查链接：${detailPageUrl}`
-    );
-    return await detailPage.close();
-  }
+  // if (sentElem) {
+  //   ignoreNum++
+  //   myLog(
+  //     `🎃 略过 ${fullName}，已经沟通过了, 复查链接：${detailPageUrl}`
+  //   );
+  //   return await detailPage.close();
+  // }
 
   await availableTextarea.type(helloTxt);
   // 2. 点击发送按钮
