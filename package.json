@@ -14,7 +14,9 @@
   "pkg": {
     "scripts": [
       "src/index.cjs",
-      "src/boss.cjs"
+      "src/boss.cjs",
+      "src/utils.cjs",
+      "src/open.cjs"
     ],
     "targets": [
       "node16-win-x64"

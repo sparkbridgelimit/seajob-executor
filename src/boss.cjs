@@ -10,12 +10,12 @@
 const puppeteer = require("puppeteer-extra");
 const stealthPlugin = require("puppeteer-extra-plugin-stealth");
 const { precache } = require("./precache.cjs");
+const { sendMsg, myLog } = require("./utils.cjs");
 
 puppeteer.use(stealthPlugin());
 
 let browser;
 let marketPage;
-let logs = [];
 let ignoreNum = 0;
 let pageNum = 1;
 
@@ -64,7 +64,7 @@ async function start(conf = {}) {
     queryParams: inputQueryParams = {},
     helloTxt: inputHelloTxt = "",
     wt2Cookie = "",
-    targetNum: inputTargetNum = 2,
+    targetNum: inputTargetNum = 1,
     timeout: inputTimeout = 5000,
     salaryRange: inputSalaryRange = [0, Infinity],
     keySkills: inputKeySkills = [],
@@ -123,6 +123,7 @@ async function start(conf = {}) {
       myLog(
         "❌ 执行出错：检测到 Boss 安全校验。请先在 Boss 网页上完成验证后重试"
       );
+      sendMsg('challenge', { url: page.url() })
     }
   }
   await browser?.close()?.catch((e) => myLog("关闭无头浏览器出错", e));
@@ -187,6 +188,7 @@ async function autoSayHello(marketPage) {
       companyName.includes(name)
     );
     if (excludeCompanyName) {
+      ignoreNum++;
       myLog(`🎃 略过${fullName}，包含屏蔽公司关键词（${excludeCompanyName}）`);
       return false;
     }
@@ -196,6 +198,7 @@ async function autoSayHello(marketPage) {
       .$eval(".boss-online-tag", (node) => node.innerText === "在线")
       .catch(() => false);
     if (!isOnline && filterOffline) {
+      ignoreNum++;
       myLog(`🎃 略过 ${fullName}，BOSS不在线`);
       return false;
     }
@@ -203,6 +206,7 @@ async function autoSayHello(marketPage) {
     // 筛选岗位名
     let excludeJobName = excludeJobs.find((name) => jobName.includes(name));
     if (excludeJobName) {
+      ignoreNum++;
       myLog(`🎃 略过${fullName}，包含屏蔽工作关键词（${excludeJobName}）`);
       return false;
     }
@@ -217,6 +221,7 @@ async function autoSayHello(marketPage) {
         ? true // [0, Infinity]，所有工作薪资都比 0 高
         : customSalaryMax >= oriSalaryMin && customSalaryMin <= oriSalaryMax;
     if (!availSalary) {
+      ignoreNum++;
       myLog(
         `🎃 略过${fullName}，当前 [${oriSalaryMin}, ${oriSalaryMax}], 不满足 [${customSalaryMin}, ${customSalaryMax}]`
       );
@@ -235,7 +240,7 @@ async function autoSayHello(marketPage) {
   });
   while (notPostJobs.length && targetNum > 0) {
     let node = notPostJobs.shift();
-    await sleep(5000);
+    await sleep(timeout);
     await sendHello(node, marketPage);
   }
 }
@@ -267,6 +272,7 @@ async function sendHello(node, marketPage) {
     ]);
     let res = resList.find((curr) => curr.status === "fulfilled");
     if (!res || !(await checkBossActiveStatus(bossActiveType, res.value))) {
+      ignoreNum++;
       myLog(
         `🎃 略过${fullName}，Boss 活跃时间不符：${
           res?.value || "活跃时间不存在"
@@ -290,6 +296,7 @@ async function sendHello(node, marketPage) {
   // console.log('🔎 ~ sendHello ~ communityBtnInnerText data-url:', !(await detailPage.evaluate(communityBtn => communityBtn.getAttribute('data-url'), communityBtn)) && true);
 
   if (communityBtnInnerText.includes("继续沟通")) {
+    ignoreNum++
     myLog(`🎃 略过${fullName}，曾沟通`);
     return await detailPage.close();
   }
@@ -299,6 +306,7 @@ async function sendHello(node, marketPage) {
   )?.toLowerCase();
   let foundExcludeSkill = excludeJobs.find((word) => jobDetail.includes(word));
   if (foundExcludeSkill) {
+    ignoreNum++;
     myLog(
       `🎃 略过${fullName}，工作内容包含屏蔽词：${foundExcludeSkill}。\n🛜 复查链接：${detailPageUrl}`
     );
@@ -306,17 +314,18 @@ async function sendHello(node, marketPage) {
   }
   let notFoundSkill = keySkills.find((skill) => !jobDetail.includes(skill));
   if (keySkills.length && notFoundSkill) {
+    ignoreNum++
     myLog(
       `🎃 略过 ${fullName}，工作内容不包含关键技能：${notFoundSkill}。\n🛜 复查链接：${detailPageUrl}`
     );
     return await detailPage.close();
   }
 
-  await sleep(5000); // 等1s；沟通列表偶尔会缺少待打开的岗位，仅 window 出现。
+  await sleep(timeout); // 等1s；沟通列表偶尔会缺少待打开的岗位，仅 window 出现。
 
   communityBtn.click(); // 点击后，(1)出现小窗 （2）详情页被替换为沟通列表页
 
-  await sleep(5000);
+  await sleep(timeout);
 
   let needCompleteResumeSelector = "div.dialog-wrap.greet-pop";
   let ignoreButttonSelector =
@@ -357,7 +366,7 @@ async function sendHello(node, marketPage) {
   await detailPage
     .click("div.message-controls > div > div.chat-op > button")
     .catch((e) => e); // 跳转列表按钮
-  await sleep(5000); // 等待消息发送
+  await sleep(timeout); // 等待消息发送
   targetNum--;
 
   const shortUrl = detailPageUrl.split("?").shift();
@@ -365,6 +374,13 @@ async function sendHello(node, marketPage) {
   myLog(
     `OK | ${job_task_id} | ${fullName} | [${oriSalaryMin}-${oriSalaryMax}K] | ${shortUrl}`
   );
+  sendMsg('greet_done', {
+    job_task_id,
+    fullName,
+    oriSalaryMin,
+    oriSalaryMax,
+    shortUrl
+  })
 
   return await detailPage.close();
 }
@@ -514,13 +530,7 @@ async function asyncFilter(list = [], fn) {
   const results = await Promise.all(list.map(fn)); // 建设成功返回 true，失败返回 false
   return list.filter((_v, index) => results[index]);
 }
-function myLog(...args) {
-  let str = args.join(" ");
-  if (str.includes("略过")) ignoreNum++;
 
-  logs.push(`${str}`);
-  console.log(...args);
-}
 /**
  * '18-35K·14薪' -> [18, 35]
  * '500-1000元' -> [0.5, 1]
@@ -549,4 +559,4 @@ function sleep(time = 1000) {
   });
 }
 
-module.exports = { main: start, logs };
+module.exports = { main: start };
