@@ -5,6 +5,23 @@ const { myLog } = require("./utils.cjs");
 
 puppeteer.use(stealthPlugin());
 
+let cookies = [
+  {
+    name: "wt2",
+    value: "",
+    domain: ".zhipin.com",
+    httpOnly: true,
+    secure: true,
+  },
+  {
+    name: "wbg",
+    value: "0",
+    domain: ".zhipin.com",
+    httpOnly: true,
+    secure: true,
+  },
+];
+
 const context = {
   browser: null,
   page: null,
@@ -12,6 +29,7 @@ const context = {
   executablePath: "",
   user_data_dir: "./cache_dir",
   url: "",
+  wt2Cookie: "",
 };
 
 /** 启动浏览器，写入 cookie */
@@ -23,23 +41,33 @@ async function initBrowserAndSetCookie() {
   myLog("Executable path:", executablePath);
   const userDataDir = context.user_data_dir;
 
-  myLog("userDataDir: ", userDataDir);
+  myLog("userDataDir:", userDataDir);
 
   context.browser = await puppeteer.launch({
     userDataDir: context.user_data_dir,
     headless: context.headless,
     defaultViewport: null,
-    ignoreDefaultArgs: ['--enable-automation'],
+    ignoreDefaultArgs: ["--enable-automation"],
     executablePath: context.executablePath,
     args: [
-      '--disable-features=PortScanning',
-      "--disable-infobars",
-      "--start-maximized",
+      "--disable-extensions",
+      "--disable-gpu",
+      "--no-sandbox",
+      "--no-first-run",
+      "--mute-audio",
+      "--no-default-browser-check",
+      "--disable-notifications",
     ],
   });
 
   const [page] = await context.browser.pages();
   context.page = page;
+
+  // 获取并打印当前页面的 cookies
+  const ex_cookies = await context.page.cookies();
+  console.log("ex_cookies:", ex_cookies);
+
+  await context.page.setCookie(...cookies);
 
   setupEventListeners();
 
@@ -49,10 +77,10 @@ async function initBrowserAndSetCookie() {
   });
 }
 
-
 // 打开boss直聘
 async function open(conf = {}) {
   Object.assign(context, conf);
+  cookies[0].value = context.wt2Cookie;
   console.log(context);
   await initBrowserAndSetCookie();
 }
@@ -62,7 +90,7 @@ async function open(conf = {}) {
  */
 const setupEventListeners = () => {
   if (!context.browser) return;
-  
+
   // 监听浏览器关闭
   context.browser.on("disconnected", () => {
     console.log("Browser has been closed. Exiting bee-headless...");

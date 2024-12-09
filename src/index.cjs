@@ -45,7 +45,8 @@ if (task === "open_browser") {
     headless,
     user_data_dir,
     executablePath: chrome_path,
-    url: payload.url
+    url: payload.url,
+    wt2Cookie: payload.wt2Cookie,
   });
 } else {
   let payloadObj = payload;
@@ -61,7 +62,8 @@ if (task === "open_browser") {
   const targetNum = payloadObj.target_num || 1;
   const helloTxt = payloadObj.hello_txt || "你好";
   const headless = payloadObj.headless || "true";
-  const job_task_id = payloadObj.job_task_id || "job_task_id";
+  const job_task_id = payloadObj.job_task_id;
+  const job_define_id = payloadObj.job_define_id;
   const timeout = payloadObj.timeout || "5000";
 
   console.log("Extracted values:", {
@@ -76,6 +78,7 @@ if (task === "open_browser") {
     helloTxt,
     headless,
     job_task_id,
+    job_define_id
   });
 
   start({
@@ -96,5 +99,6 @@ if (task === "open_browser") {
     excludeJobs: JSON.parse(exclude_job),
     keySkills: JSON.parse(key_kills),
     job_task_id,
+    job_define_id,
   });
 }

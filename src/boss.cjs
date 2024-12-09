@@ -54,6 +54,7 @@ let excludeJobs = [];
 let headless = "new";
 let openNewTabTime = 5000;
 let job_task_id = "";
+let job_define_id = "";
 
 // 是否过滤不在线boss
 let filterOffline = false;
@@ -73,6 +74,7 @@ async function start(conf = {}) {
     excludeJobs: inputExcludeJobs = [],
     headless: inputHeadless = "new",
     job_task_id: input_job_task_id = "",
+    job_define_id: input_job_define_id = "",
     filterOffline: input_filterOffline = false,
   } = conf);
 
@@ -87,6 +89,7 @@ async function start(conf = {}) {
   excludeJobs = inputExcludeJobs;
   headless = inputHeadless;
   job_task_id = input_job_task_id;
+  job_define_id = input_job_define_id;
   filterOffline = input_filterOffline;
   cookies[0].value = wt2Cookie;
   pageNum = queryParams.page || 1;
@@ -104,7 +107,7 @@ async function start(conf = {}) {
     myLog(`⏳ 自动打招呼进行中, 本次目标: ${targetNum}; 请耐心等待`);
 
     await main();
-
+    sendMsg('job_finished', {});
     myLog("✨ 任务顺利完成！");
   } catch (error) {
     myLog("❌ 执行出错", error);
@@ -123,7 +126,7 @@ async function start(conf = {}) {
       myLog(
         "❌ 执行出错：检测到 Boss 安全校验。请先在 Boss 网页上完成验证后重试"
       );
-      sendMsg('challenge', { url: page.url() })
+      sendMsg('challenge', { job_define_id: String(job_define_id), url: page.url() })
     }
   }
   await browser?.close()?.catch((e) => myLog("关闭无头浏览器出错", e));
@@ -360,6 +363,19 @@ async function sendHello(node, marketPage) {
     throw new Error("没有可用的输入框，点击“启动任务”重试");
   }
 
+  // 已经发过了就重复了
+  // sentElemt
+  const sentElemSelector = "";
+  const sentElem = await detailPage.$(sentElemSelector);
+  
+  if (sentElem) {
+    ignoreNum++
+    myLog(
+      `🎃 略过 ${fullName}，已经沟通过了, 复查链接：${detailPageUrl}`
+    );
+    return await detailPage.close();
+  }
+
   await availableTextarea.type(helloTxt);
   // 2. 点击发送按钮
   await detailPage.click("div.send-message").catch((e) => e); // 弹窗按钮
@@ -374,13 +390,13 @@ async function sendHello(node, marketPage) {
   myLog(
     `OK | ${job_task_id} | ${fullName} | [${oriSalaryMin}-${oriSalaryMax}K] | ${shortUrl}`
   );
-  sendMsg('greet_done', {
-    job_task_id,
-    fullName,
-    oriSalaryMin,
-    oriSalaryMax,
-    shortUrl
-  })
+  // sendMsg('greet_done', {
+  //   job_task_id,
+  //   fullName,
+  //   oriSalaryMin,
+  //   oriSalaryMax,
+  //   shortUrl
+  // })
 
   return await detailPage.close();
 }
@@ -446,6 +462,7 @@ async function initBrowserAndSetCookie() {
     devtools: false,
     defaultViewport: null,
     executablePath: executablePath,
+    ignoreDefaultArgs: ['--enable-automation'],
     args: [
       '--disable-extensions',
       '--disable-gpu',
@@ -458,6 +475,10 @@ async function initBrowserAndSetCookie() {
   });
 
   marketPage = await getNewPage();
+  // 获取并打印当前页面的 cookies
+  const ex_cookies = await marketPage.cookies();
+  console.log("ex_cookies:", ex_cookies);
+
   await marketPage.setDefaultTimeout(timeout);
   await marketPage.setCookie(...cookies);
 }
