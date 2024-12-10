@@ -60,11 +60,12 @@ if (task === "open_browser") {
   const exclude_job = payloadObj.exclude_job || "[]";
   const wt2Cookie = payloadObj.wt2_cookie || null;
   const targetNum = payloadObj.target_num || 1;
-  const helloTxt = payloadObj.hello_txt || "你好";
+  const helloTxt = payloadObj.hello_text || "你好";
   const headless = payloadObj.headless || "true";
   const job_task_id = payloadObj.job_task_id;
   const job_define_id = payloadObj.job_define_id;
   const timeout = payloadObj.timeout || "5000";
+  const filterOffline = payloadObj.filter_offline;
 
   console.log("Extracted values:", {
     keyword,
@@ -78,7 +79,8 @@ if (task === "open_browser") {
     helloTxt,
     headless,
     job_task_id,
-    job_define_id
+    job_define_id,
+    filterOffline
   });
 
   start({
@@ -100,5 +102,6 @@ if (task === "open_browser") {
     keySkills: JSON.parse(key_kills),
     job_task_id,
     job_define_id,
+    filterOffline
   });
 }
